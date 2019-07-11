@@ -12,7 +12,11 @@ if __name__ == "__main__":
 	parser.add_argument('inputFile', type=str, nargs="+", help='Name of the input file.')
 	parser.add_argument('-s', '--save', type=str, help="Save to the plot to a file.")
 	parser.add_argument('-p', '--pause', type=float, default=0.5, help="Number of seconds to pause on each plot.")
+	parser.add_argument('-i', '--interactive', action="store_true", help="Make each plot interactive (mouse to zoom, etc).")
 	arg = parser.parse_args()
+
+	blocking = False
+	if arg.interactive: blocking = True
 
 	plotWidth = 8
 	plotHeight = plotWidth/1.62
@@ -31,7 +35,7 @@ if __name__ == "__main__":
 
 		print(spectrum)
 		matplotlib.pyplot.draw()
-		matplotlib.pyplot.show(block=False)
+		matplotlib.pyplot.show(block=blocking)
 		matplotlib.pyplot.pause(arg.pause)
 		if arg.save is not None:
 			print("Writing to file: %s"%arg.save)

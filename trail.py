@@ -208,6 +208,7 @@ if __name__ == "__main__":
 		for index, s in enumerate(spectra):
 			trailArray.append(s.flux)
 			print(len(s.flux), s.name, s.loadedFromFilename)
+		trailBitmap = numpy.copy(trailArray)
 	else:
 		numPhaseBins = config.phaseBins
 		ySize = numPhaseBins * 2
@@ -251,9 +252,7 @@ if __name__ == "__main__":
 			newSpectrum = (numpy.array(existingSpectrum) + numpy.array(s.flux)) / 2
 			trailArray[phaseBin] = newSpectrum
 
-	print("Bitmap for trails size: (%d, %d)"%(xSize, ySize))
-	
-	trailBitmap = numpy.array(numpy.copy(phasedArray))
+		trailBitmap = numpy.array(numpy.copy(phasedArray))
 
 	startWavelength = min(s.wavelengths)
 	endWavelength = max(s.wavelengths)
@@ -261,9 +260,6 @@ if __name__ == "__main__":
 	else: yMax = len(spectra)
 	if arg.boost: trailBitmap = generallib.percentiles(trailBitmap, 20, 99)
 	trailPlot = matplotlib.pyplot.figure(figsize=(plotWidth, plotHeight))	
-	#from skimage.transform import resize
-	#trailResized = resize(trailBitmap, (endWavelength-startWavelength, endWavelength-startWavelength), anti_aliasing=True)
-	#matplotlib.pyplot.imshow(trailResized)
 	matplotlib.pyplot.imshow(trailBitmap, extent=[startWavelength, endWavelength, yMax, 0])
 	axes = matplotlib.pyplot.gca()
 	axes.invert_yaxis()
