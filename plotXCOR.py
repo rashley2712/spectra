@@ -4,6 +4,7 @@ import matplotlib.pyplot
 import datetimelib
 import readmultispec
 import spectrumlib
+import generallib
 from astropy.io import fits
 
 class xcorData():

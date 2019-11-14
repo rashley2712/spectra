@@ -125,11 +125,12 @@ if __name__ == "__main__":
 			s.divide(normalConstant)
 	
 
-	else:
+#	else:
+		#continue
 		# Normalise original spectrum by dividing by the fit 
-		for s in spectra:
-			fit = s.fitPoly(config.order, config.mask)
-			s.divideArray(fit)		
+		#for s in spectra:
+		#	fit = s.fitPoly(config.order, config.mask)
+		#	s.divideArray(fit)		
 
 	# Trim to the required wavelength range
 	for s in spectra:
@@ -150,12 +151,6 @@ if __name__ == "__main__":
 	for s in spectra:
 		s.resample(sampleWavelengths)
 	
-	
-	
-	# Remove any negative values in the spectra
-	for s in spectra:
-		spectrum.removeNegatives()	
-
 
 	# Remove any negative values in the spectra
 	for s in spectra:
@@ -170,7 +165,7 @@ if __name__ == "__main__":
 			matplotlib.pyplot.step(spectrum.wavelengths, spectrum.flux,  color = 'black')
 	
 		 
-			if config.template is None: matplotlib.pyplot.plot(spectrum.wavelengths, fit, color='red', linestyle="--")
+		#	if config.template is None: matplotlib.pyplot.plot(spectrum.wavelengths, fit, color='red', linestyle="--")
 			axes = matplotlib.pyplot.gca()
 
 			for m in config.mask:
@@ -267,9 +262,7 @@ if __name__ == "__main__":
 	axes.figure.set_size_inches(plotWidth, plotHeight)
 	if config.title is not None:
 		matplotlib.pyplot.title(config.title)
-	else:
-		matplotlib.pyplot.title(arg.config)
-
+	
 	if hasEphem: matplotlib.pyplot.ylabel('Phase')
 	else: matplotlib.pyplot.ylabel('Spectrum number')
 	matplotlib.pyplot.xlabel('Wavelength (\AA)')
