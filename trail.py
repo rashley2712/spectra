@@ -233,43 +233,76 @@ if __name__ == "__main__":
 			print("Bin #%d  phase range %f to %f contains %d spectra to average together."%(bin, phaseLower, phaseUpper, len(spectraToAdd)))
 			
 
-		# This is the old (flawed) method of doing the binning and adding the spectra in the bins
-		for s in spectra:
-			phase = s.phase
-			phaseBin = int(phase*numPhaseBins)
-			existingSpectrum = trailArray[phaseBin]
-			newSpectrum = (existingSpectrum + s.flux )/2
-			trailArray[phaseBin] = newSpectrum
-			# Also add the spectrum to the phase+1 bin
-			phase = s.phase + 1.0
-			phaseBin = int(phase*float(numPhaseBins))
-			existingSpectrum = trailArray[phaseBin]
-			newSpectrum = (numpy.array(existingSpectrum) + numpy.array(s.flux)) / 2
-			trailArray[phaseBin] = newSpectrum
-
+	
 		trailBitmap = numpy.array(numpy.copy(phasedArray))
 
 	startWavelength = min(s.wavelengths)
 	endWavelength = max(s.wavelengths)
+	
 	if hasEphem: yMax = 2
 	else: yMax = len(spectra)
+	
 	if arg.boost: trailBitmap = generallib.percentiles(trailBitmap, 20, 99)
+	
 	trailPlot = matplotlib.pyplot.figure(figsize=(plotWidth, plotHeight))	
+	
+	#matplotlib.pyplot.imshow(trailBitmap, extent=[startWavelength, endWavelength, yMax, 0])
+	wavelength2velocity = lambda w: (w - 6562.8) / 6562.8 * 3E5 
+	
+	#matplotlib.pyplot.imshow(trailBitmap, extent=[wavelength2velocity(startWavelength), wavelength2velocity(endWavelength), yMax, 0])
 	matplotlib.pyplot.imshow(trailBitmap, extent=[startWavelength, endWavelength, yMax, 0])
+	#matplotlib.pyplot.imshow(trailBitmap)
 	axes = matplotlib.pyplot.gca()
 	axes.invert_yaxis()
 	matplotlib.pyplot.axis('auto')
 	axes.figure.set_size_inches(plotWidth, plotHeight)
+	
+	#newPositions = [0, 10, 20, 200]
+	#axes.set_xticks(newPositions)
+
+	# this is code to add a velocity scale to to the top of the x-axis
+	#ax2 = axes.twiny()
+	#wavelength2velocity = lambda w: (w - 6562.8) / 6562.8 * 3E5 
+	#newlabel = [273.15,290,310,330,350,373.15] # labels of the xticklabels: the position in the new x-axis
+	#newLabels = [-2500, 0, 2500]
+	#newPositions = [wavelength2velocity(w) for w in s.wavelengths]
+	#print(newPositions)
+	#k2degc = lambda t: t-273.15 # convert function: from Kelvin to Degree Celsius
+	#newpos   = [k2degc(t) for t in newlabel]   # position of the xticklabels in the old x-axis
+	#ax2.set_xticks(newPositions)
+	#ax2.set_xticklabels(newLabels)
+	#ax2.set_xlabel('Velocity [km/s]')
+	# ax2.set_xlim(axes.get_xlim())
+
 	if config.title is not None:
 		matplotlib.pyplot.title(config.title)
 	
 	if hasEphem: matplotlib.pyplot.ylabel('Phase')
 	else: matplotlib.pyplot.ylabel('Spectrum number')
 	matplotlib.pyplot.xlabel('Wavelength (\AA)')
+	
+	spectScale = (endWavelength - startWavelength) / xSize
+	spectrum2velocity = lambda n: wavelength2velocity((n*spectScale)+startWavelength)
+	velocityToWavelength = lambda v: v / 3E5 * 6562.8 + 6562.8
+	topAxes = axes.twiny()
+	velocities = [spectrum2velocity(n) for n in range(xSize)]
+	#velocities = [wavelength2velocity(w) for w in spectrum.wavelengths]
+	#print(velocities)
+	bottomLabels = axes.get_xticklabels()
+	print(bottomLabels)
+	velocityLabels = [-1500, -1000, -500,  0, 500, 1000, 1500]
+	xTicks = [velocityToWavelength(v) for v in velocityLabels]
+	print(velocityLabels)
+	print(xTicks)
+	topAxes.set_xticks(xTicks)	
+	topAxes.set_xticklabels(velocityLabels)	
+	print(topAxes.get_xlim())
+	topAxes.set_xlim(axes.get_xlim())
+	topAxes.set_xlabel('Velocity ($\mathrm{km}\,\mathrm{s}^{-1}$)')
+	
 	matplotlib.pyplot.draw()
 	if arg.save is not None:
 			print("Writing to file: %s"%arg.save)
 			matplotlib.pyplot.savefig(arg.save)
 	matplotlib.pyplot.show(block=True)
-	input("Press enter to continue.")
 
