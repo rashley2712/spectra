@@ -74,6 +74,8 @@ if __name__ == "__main__":
 		spectrumPlot.canvas.set_window_title(config.title)
 
 		matplotlib.pyplot.step(spectrum.wavelengths, spectrum.flux,  color = 'black')
+		axes = matplotlib.pyplot.gca()
+		axes.set_xlim(config.wavelengthRange[0], config.wavelengthRange[1])
 		matplotlib.pyplot.title(config.title)
 		matplotlib.pyplot.ylabel(config.ylabel)
 		matplotlib.pyplot.xlabel(config.xlabel)
