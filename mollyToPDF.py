@@ -56,6 +56,7 @@ if __name__ == "__main__":
 		spectrum.wavelengthUnits = "A"
 		spectrum.fluxLabel = r.label
 		spectrum.fluxUnits = r.units
+		if spectrum.fluxUnits=="MILLIJANSKYS": spectrum.fluxUnits = "mJy"
 		# spectrum.fluxUnits = "relative counts"
 		
 		print("Parsed headers of %s for HJD: %f"%(targetName, spectrum.HJD))
