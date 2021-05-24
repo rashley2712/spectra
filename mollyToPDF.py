@@ -22,6 +22,8 @@ if __name__ == "__main__":
 	config.load(filename=arg.config)
 	config.show()
 
+
+
 	blocking = False
 	if arg.interactive: blocking = True
 
@@ -108,7 +110,11 @@ if __name__ == "__main__":
 
 			matplotlib.pyplot.step(spectrum.wavelengths, spectrum.flux,  color = 'black', lw=0.5)
 			axes = matplotlib.pyplot.gca()
-			axes.set_xlim(config.wavelengthRange[0], config.wavelengthRange[1])
+			try: 
+				axes.set_xlim(config.wavelengthRange[0], config.wavelengthRange[1])
+			except AttributeError:
+				axes.set_xlim(numpy.min(spectrum.wavelengths), numpy.max(spectrum.wavelengths))
+				
 			matplotlib.pyplot.ylabel(config.ylabel + " (" + spectrum.fluxUnits + ")")
 			if (colIndex == plotsPerPage): 
 				matplotlib.pyplot.draw()
