@@ -8,17 +8,17 @@ from astropy.io import fits
 
 
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser(description='Loads JSON spectrum file and plots it.')
+	parser = argparse.ArgumentParser(description='Search for a sodium absorption.')
 	parser.add_argument('inputFile', type=str, nargs="+", help='Name of the input file.')
 	parser.add_argument('-s', '--save', type=str, help="Save to the plot to a file.")
 	parser.add_argument('-c', '--config', type=str, default="plot.cfg", help="Name of the config file. Default is 'plot.cfg'.")
 	parser.add_argument('-p', '--pause', type=float, default=0.5, help="Number of seconds to pause on each plot.")
 	parser.add_argument('-i', '--interactive', action="store_true", help="Make each plot interactive (mouse to zoom, etc).")
+	parser.add_argument('-l', '--list', action="store_true", help="The input file is actually a list of input files.")
 	arg = parser.parse_args()
 
 	config = configlib.configClass(debug=False)
 	config.load(arg.config)
-
 	blocking = False
 	if arg.interactive: blocking = True
 
@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
 	plotWidth = 7
 	plotHeight = plotWidth/1.62
-	spectrumPlot = matplotlib.pyplot.figure(figsize=(plotWidth, plotHeight))
+	spectrumPlot = matplotlib.pyplot.figure(figsize=config.plotDimensions)
 
 	if config.stacked: 
 		print("We are going to stack this plot.")

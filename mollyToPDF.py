@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import argparse, sys, numpy
+import argparse, sys, numpy, os
 import matplotlib.pyplot
 import datetimelib
 import spectrumlib, generallib, configlib
@@ -10,7 +10,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description='Loads Molly (.mol) file of spectra and plots them all as a PDF file. It needs a configuration file call plot.cfg.')
 	parser.add_argument('inputFile', type=str, help='Name of the molly file.')
-	parser.add_argument('outputFile', type=str, help="The filename of the pdf file.")
+	parser.add_argument('-o', '--outputFile', type=str, help="The filename of the pdf file. Default is to change the extension of the input file.")
 	parser.add_argument('-c', '--config', type=str, default='plot.cfg', help="Config file. Default is 'plot.cfg'")
 	parser.add_argument('-n', '--number', type=int, default=0, help="Number of the spectrum in the molly file (starting with 1). Default is 0 = 'all'.")
 	parser.add_argument('-i', '--interactive', action="store_true", help="Show an interactive preview after each page (mouse to zoom, etc).")
@@ -21,8 +21,6 @@ if __name__ == "__main__":
 	config = configlib.configClass(debug=False)
 	config.load(filename=arg.config)
 	config.show()
-
-
 
 	blocking = False
 	if arg.interactive: blocking = True
@@ -92,7 +90,10 @@ if __name__ == "__main__":
 		print("Plotting all spectra %d in the file."%numSpectra)
 		plotsPerPage = arg.plotsPerPage
 
-	with PdfPages(arg.outputFile) as pdf:
+	if arg.outputFile is None:
+		pdfFilename = os.path.splitext(arg.inputFile)[0] + ".pdf"
+	else: pdfFilename = arg.outputFile
+	with PdfPages(pdfFilename) as pdf:
 		pageNumber = 1
 		for index, spectrum in enumerate(spectra):
 			colIndex = index % plotsPerPage + 1
@@ -105,7 +106,10 @@ if __name__ == "__main__":
 				spectrumPlot.canvas.set_window_title(config.title)
 				if config.title != "None":  matplotlib.pyplot.title(config.title)
 			else:	
+				# Get rid of any underscores in the title. matplotlib doesn't like it.
+				spectrum.name = spectrum.name.replace('_', '-')
 				spectrumPlot.canvas.set_window_title(spectrum.name)
+				
 				matplotlib.pyplot.title(spectrum.name)
 
 			matplotlib.pyplot.step(spectrum.wavelengths, spectrum.flux,  color = 'black', lw=0.5)
